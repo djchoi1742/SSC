@@ -239,7 +239,6 @@ class InferenceModel63:
         grad_con = tf.reduce_mean(tf.gradients(self.prob, self.bn_relu)[0], axis=[1, 2], keepdims=True)
         self.local1 = tf.reduce_mean(grad_con * self.bn_relu, axis=-1, keepdims=True)
         self.local = tf.image.resize_bilinear(images=self.local1, size=[self.img_h, self.img_w])
-
         print('local: ', self.local)
 
         if trainable:
