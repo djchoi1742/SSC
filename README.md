@@ -1,5 +1,4 @@
 # Multi-modal network to evaluate subscapularis tendon tears
-## Convolutional neural network & Logistic regression for diagnosing subscapularis tendon tears
 - data
    1. data/setup1.py       - Setting pre-training dataset
    2. data/setup2.py       - Setting main dataset
