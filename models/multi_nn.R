@@ -7,6 +7,7 @@ library(ggplot2)
 
 load("/home/chzze/01_Rscript/33_SSC/RData/33_00_ftlist.RData")
 
+
 ### 1. Dataset: training, validation, test, test2 set ####
 df_train = openxlsx::read.xlsx('/data/SNUBH/SSC/info/dataset/exp111_train.xlsx', detectDates=TRUE)
 df_val = openxlsx::read.xlsx('/data/SNUBH/SSC/info/dataset/exp111_val.xlsx', detectDates=TRUE)
@@ -14,7 +15,7 @@ df_val = openxlsx::read.xlsx('/data/SNUBH/SSC/info/dataset/exp111_val.xlsx', det
 df_test = openxlsx::read.xlsx('/data/SNUBH/SSC/info/dataset/exp131_test.xlsx', detectDates=TRUE)
 df_test2 = openxlsx::read.xlsx('/data/SNUBH/SSC/info/dataset/exp151_test23.xlsx', detectDates=TRUE)
 
-### **Preprocessing ####
+### **a. Preprocessing ####
 df_train$PATIENT_AGE = 0.01 * df_train$PATIENT_AGE
 df_train$VAS_MED = 0.1 * df_train$VAS_MED
 
@@ -29,7 +30,7 @@ df_test2$VAS_MED = 0.1 * df_test2$VAS_MED
 
 
 ### 2. Fit logistic regression based on clinical variables ####
-### **Fitting ####
+### **a. Fitting ####
 clv = c('PATIENT_AGE', 'VAS_MED', 'TRAUMA', 'DOMINANT_SIDE')
 clv_var = paste(clv, collapse='+')
 lgs_clv_formula = as.formula(paste('SSC_LABEL_BIN1 ~', clv_var))
@@ -44,14 +45,14 @@ sigmoid = function(x) {
 }
 
 
-### **Predict ####
+### **b. Predict ####
 pred_clv_train = predict(lgs_clv_fit, newdata=df_train, type='response')
 pred_clv_val = predict(lgs_clv_fit, newdata=df_val, type='response')
 pred_clv_test = predict(lgs_clv_fit, newdata=df_test, type='response')
 pred_clv_test2 = predict(lgs_clv_fit, newdata=df_test2, type='response')
 
 
-### **Calculate AUC ####
+### **c. Calculate AUC ####
 roc(df_train$SSC_LABEL_BIN1, pred_clv_train)  # AUC: 0.6458
 roc(df_val$SSC_LABEL_BIN1, pred_clv_val)  # AUC: 0.5747
 roc(df_test$SSC_LABEL_BIN1, pred_clv_test)  # AUC: 0.6401
@@ -78,7 +79,7 @@ m_test1 = merge_mm_df(model_path, 0, 3, lgs_clv_fit, df_test, 'test.npy')
 m_test2 = merge_mm_df(model_path, 0, 3, lgs_clv_fit, df_test2, 'test23.npy')
 
 
-### **Save multi-modal coefficient ####
+### **d. Save multi-modal coefficient ####
 pre_train_mm = function(pre_serial, lgs_clv_fit, df_train) {
   
   pre_train_path = '/data/SNUBH/SSC/exp153/Model58'
@@ -122,67 +123,7 @@ pre_train_mm = function(pre_serial, lgs_clv_fit, df_train) {
   print(roc_mm_output)
 }
 
-
 pre_train_mm(0, lgs_clv_fit, df_train)
 pre_train_mm(3, lgs_clv_fit, df_train)
 pre_train_mm(7, lgs_clv_fit, df_train)
 pre_train_mm(11, lgs_clv_fit, df_train)
-
-
-### 3. Loading CNN output: ensembled, only image ####
-dl_train1 = read.csv('/data/SNUBH/SSC/exp151/Model58/Model58/result-e003/Model58_train.npy_e003_003.csv')  # ensemble
-colnames(dl_train1)[colnames(dl_train1) %in% 'PROB'] = 'DL_OUTPUT'
-roc(dl_train1$LABEL, dl_train1[,'DL_OUTPUT'])  
-
-dl_val1 = read.csv('/data/SNUBH/SSC/exp151/Model58/Model58/result-e003/Model58_trval.npy_e003_003.csv')  # ensemble
-colnames(dl_val1)[colnames(dl_val1) %in% 'PROB'] = 'DL_OUTPUT'
-roc(dl_val1$LABEL, dl_val1[,'DL_OUTPUT'])  
-
-dl_test1 = read.csv('/data/SNUBH/SSC/exp151/Model58/Model58/result-e003/Model58_test.npy_e003_003.csv')  # ensemble
-colnames(dl_test1)[colnames(dl_test1) %in% 'PROB'] = 'DL_OUTPUT'
-roc(dl_test1$LABEL, dl_test1[,'DL_OUTPUT'])   
-
-dl_test21 = read.csv('/data/SNUBH/SSC/exp151/Model58/Model58/result-e003/Model58_test23.npy_e003_003.csv')  # ensemble
-colnames(dl_test21)[colnames(dl_test21) %in% 'PROB'] = 'DL_OUTPUT'
-roc(dl_test21$LABEL, dl_test21[,'DL_OUTPUT'])  
-
-
-### 4. Merge dataset: image + clinical information ####
-emm_train = data.frame(dl_train1, NN_LOGIT=predict(lgs_clv_fit, newdata=df_train, type='link'))
-emm_val = data.frame(dl_val1, NN_LOGIT=predict(lgs_clv_fit, newdata=df_val, type='link'))
-emm_test = data.frame(dl_test1, NN_LOGIT=predict(lgs_clv_fit, newdata=df_test, type='link'))
-emm_test2 = data.frame(dl_test21, NN_LOGIT=predict(lgs_clv_fit, newdata=df_test2[df_test2$NUMBER %in% dl_test21$NUMBER,], type='link'))
-
-
-### 5. Fitting logistic regression: IMAGE_LOGIT, CLV_LOGIT ####
-emm_fit = glm('LABEL ~ LOGIT + NN_LOGIT', data=emm_train, family='binomial')
-summary(emm_fit)
-
-emm_weight = emm_fit$coefficients[-1]
-emm_bias = emm_fit$coefficients[1]
-
-### **Save weights as json file
-# write_json(list(mm_weight, mm_bias), '/data/SNUBH/SSC/exp151/Model58/Model58/result-000/mm_lgs_weight.json')
-
-
-### **Predict ####
-pred_emm_train = predict(emm_fit, newdata=emm_train, type='response')
-pred_emm_val = predict(emm_fit, newdata=emm_val, type='response')
-pred_emm_test = predict(emm_fit, newdata=emm_test, type='response')
-pred_emm_test2 = predict(emm_fit, newdata=emm_test2, type='response')
-
-
-### **Calculate AUC ####
-roc(emm_train$LABEL, pred_emm_train)  # 0.9295
-roc(emm_val$LABEL, pred_emm_val)  # 0.8292
-roc(emm_test$LABEL, pred_emm_test)  # 0.8295
-roc(emm_test2$LABEL, pred_emm_test2)  # 0.8185
-
-
-### Etc ####
-clv_weight = lgs_clv_fit$coefficients[-1]
-clv_bias = lgs_clv_fit$coefficients[1]
-
-### **Save weights as json file
-write_json(list(clv_weight, clv_bias), '/data/SNUBH/SSC/exp151/npy/clv_lgs_weight.json')
-
