@@ -112,7 +112,6 @@ else:
     use_se = model_z.get_train_info(result_path, 'USE_SE')
 
 
-
 model = getattr(model_z, infer_name)(trainable=config.train, growth_k=growth_k, theta=theta,
                                      image_size=config.image_size, image_height=image_height,
                                      learning_rate=config.learning_rate, decay_steps=config.decay_steps,
@@ -188,7 +187,6 @@ def training():
 
                 img, lbl, name, age, tm, dm, vas, _ = sess.run(data_set.train.next_batch)
                 feed_dict = {model.images: img, model.labels: lbl, model.is_training: True}
-
                 _, train_loss, train_prob, train_acc = \
                     sess.run([model.train, model.loss, model.prob, model.accuracy], feed_dict=feed_dict)
 
@@ -209,7 +207,6 @@ def training():
 
             feed_dict.update({loss_rec: np.mean(train_loss_batch), auc_rec: train_auc,
                               accuracy_rec: np.mean(train_acc_batch)})
-
             t_board.add_summary(sess=sess, feed_dict=feed_dict, log_type='train')
 
             # validation with roc-auc
@@ -227,9 +224,7 @@ def training():
                                                                  -(-data_set.val.data_length // config.batch_size)))
 
                 img, lbl, name, age, tm, dm, vas, _ = sess.run(data_set.val.next_batch)
-
                 feed_dict = {model.images: img, model.labels: lbl, model.is_training: False}
-
                 val_loss, val_prob, val_acc = sess.run([model.loss, model.prob, model.accuracy], feed_dict=feed_dict)
 
                 val_x.extend(val_prob)
@@ -255,14 +250,12 @@ def training():
                     v_criteria = v_measure < max(df_csv['LOSS'].tolist())
                 else:
                     v_criteria = None
-
             elif config.val_measure == 'auc':
                 v_measure = val_auc
                 if current_epoch >= config.max_keep + 1:
                     v_criteria = v_measure > min(df_csv['AUC'].tolist())
                 else:
                     v_criteria = None
-
             else:
                 raise ValueError('Error! Invalid validation measure.')
 
@@ -273,7 +266,6 @@ def training():
                 if current_epoch < config.max_keep + 1:
                     max_current_step.append(current_step)
                     max_perf_per_epoch.append(v_measure)
-
                     saver.save(sess=sess, save_path=os.path.join(log_path, 'model.ckpt'), global_step=current_step)
                     df_csv.loc[current_step, 'WEIGHT_PATH'] = \
                         os.path.join(log_path, 'model.ckpt-'+str(current_step))
@@ -287,7 +279,6 @@ def training():
                         max_current_step.append(current_step)
                         max_perf_per_epoch.pop(0)
                         max_perf_per_epoch.append(v_measure)
-
                         saver.save(sess=sess, save_path=os.path.join(log_path, 'model.ckpt'), global_step=current_step)
                         df_csv.loc[current_step, 'WEIGHT_PATH'] = \
                             os.path.join(log_path, 'model.ckpt-'+str(current_step))
@@ -298,7 +289,6 @@ def training():
 
                 if current_epoch == config.num_epoch:
                     break
-
         print('Training Complete...\n')
         sess.close()
 
@@ -337,7 +327,6 @@ def validation():
 
     imgs = np.zeros([num_examples, model.img_h, model.img_w, model.img_c])
     cams = np.zeros([num_ckpt, num_examples, model.img_h, model.img_w, model.img_c])
-
     lbls = np.zeros([num_examples, ], dtype=np.int32)
     lgts = np.zeros([num_ckpt, num_examples, 1])
     probs = np.zeros([num_ckpt, num_examples, 1])
@@ -360,9 +349,7 @@ def validation():
                              -(-data_set.val.data_length // config.batch_size)))
 
             img, lbl, name, age, tm, dm, vas, _ = sess.run(data_set.val.next_batch)
-
             feed_dict = {model.images: img, model.labels: lbl, model.is_training: False}
-
             val_loss, val_lgt, val_prob, val_acc = \
                 sess.run([model.loss, model.logits, model.prob, model.accuracy], feed_dict=feed_dict)
 
@@ -387,11 +374,9 @@ def validation():
         sess.close()
 
     probs, lgts, cams = np.mean(probs, axis=0), np.mean(lgts, axis=0), np.mean(cams, axis=0)
-
     id_test = data_set.id_val
 
     prob_1, lgts_1 = np.squeeze(np.array(probs)), np.squeeze(np.array(lgts))
-
     result_csv = pd.DataFrame({'NUMBER': id_test, 'PROB': prob_1, 'LOGIT': lgts_1, 'LABEL': np.array(lbls)})
     result_name = '_'.join([config.model_name, config.npy_name, trial_serial_str, '%03d' % config.num_weight])+'.csv'
                              #config.pre_weight, '%03d' % config.select_weight
