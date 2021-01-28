@@ -8,11 +8,9 @@ parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpForm
                                  description='', epilog=license, add_help=False)
 
 network_config = parser.add_argument_group('network setting (must be provided)')
-
 network_config.add_argument('--data_path', type=str, dest='data_path', default='/data/SNUBH/SSC/')
 network_config.add_argument('--pre_exp', type=str, dest='pre_exp', default='exp153')
 network_config.add_argument('--pre_model1', type=str, dest='pre_model', default='Model58')
-# network_config.add_argument('--pre_serial1', type=int, dest='pre_serial', default=5)
 
 network_config.add_argument('--exp_name', type=str, dest='exp_name', default='exp151')
 network_config.add_argument('--model_name', type=str, dest='model_name', default='Model63')
@@ -59,22 +57,13 @@ except:
 try:
     previous_path = os.path.join(config.data_path, config.pre_exp, config.pre_model,
                                  'result-%03d' % int(trial_serial_list[0]))
-    # growth_k = model_y.get_train_info(previous_path, 'GROWTH_K')
-    # block_rep = model_y.get_train_info(previous_path, 'BLOCK_REP')
-    # dense_type = model_y.get_train_info(previous_path, 'DENSE_TYPE')
-    # last_kp = model_y.get_train_info(previous_path, 'LAST_KP')
-    # use_se = model_y.get_train_info(previous_path, 'USE_SE')
-    # k_p = model_y.get_train_info(previous_path, 'K_P')
 except:
     pass
-    # growth_k, block_rep = 32, '1,1,1,1'
-    # dense_type, last_kp, use_se, k_p = 1, 1, False, '1,1,1,1'
 
 result_path = os.path.join(config.data_path, config.exp_name, config.model_name, # config.pre_model,
                            'result-%s' % trial_serial_str)
 ppt_path = os.path.join(config.data_path, config.exp_name, config.model_name, # config.pre_model,
                         'ppt-%s' % trial_serial_str)
-
 cam_path = os.path.join(config.data_path, 'cam')
 
 
@@ -96,25 +85,17 @@ h_w_prop = h_radius / w_radius
 image_height = int(config.image_size * h_w_prop)
 
 print(npy_path + '/' + config.npy_name)
-# print('h_radius: ', h_radius, '  ', 'w_radius: ', w_radius)
 
 data_set = DataSettingV1(data_dir=os.path.join(npy_path, config.npy_name),
                          batch_size=config.batch_size, only_val=True,
                          image_size=config.image_size, image_height=image_height)
 
 infer_name = 'Inference'+config.model_name
-
-
 model = getattr(model_y, infer_name)(trainable=False, theta=config.theta,
                                      pre_model='Inference'+config.pre_model,
                                      image_size=config.image_size, image_height=image_height)
-                                     # growth_k=growth_k, block_rep=block_rep,
-                                     # dense_type=dense_type, last_kp=last_kp,
-                                     # use_se=use_se, k_p=k_p)
-
 
 def restore_weight(data_path, exp_name, model_name, pre_model, trial_serial, num_weight):
-    # weight_auc_path = os.path.join(data_path, exp_name, model_name, pre_model, 'result-%03d' % trial_serial)
     weight_auc_path = os.path.join(data_path, exp_name, model_name, 'result-%03d' % trial_serial)
     weight_auc_csv = pd.read_csv(os.path.join(weight_auc_path, '_'.join([exp_name, model_name,
                                                                          '%03d' % trial_serial])+'.csv'))
@@ -177,12 +158,8 @@ def validation():
                              -(-data_set.val.data_length // config.batch_size)))
 
             img, lbl, name, age, tm, dm, vas, _ = sess.run(data_set.val.next_batch)
-
-
             feed_dict = {model.images: img, model.labels: lbl,
                          model.ages: age, model.vas: vas, model.tm: tm, model.dm: dm, model.is_training: False}
-
-            # feed_dict = {model.images: img, model.labels: lbl, model.is_training: False}
 
             val_loss, val_lgt, val_prob, val_acc = \
                 sess.run([model.loss, model.logits, model.prob, model.accuracy], feed_dict=feed_dict)
@@ -194,11 +171,7 @@ def validation():
             val_y.extend(lbl)
 
             cam, cam_raw = sess.run([model.local, model.local1], feed_dict=feed_dict)
-            
-            # cam_1, cam_2, cam_3 = cam[0], cam[1], cam[2]
-            # import pdb; pdb.set_trace()
-            # cam = sess.run(model.local, feed_dict=feed_dict)
-
+ 
             cams[ckpt_idx, step * config.batch_size:step * config.batch_size + len(lbl)] = cam
             cams_raw[ckpt_idx, step * config.batch_size:step * config.batch_size + len(lbl)] = cam_raw
             probs[ckpt_idx, step * config.batch_size:step * config.batch_size + len(lbl)] = val_prob
@@ -213,9 +186,7 @@ def validation():
         sess.close()
 
     probs, lgts, cams = np.mean(probs, axis=0), np.mean(lgts, axis=0), np.mean(cams, axis=0)
-    # cams_raw = np.mean(cams_raw, axis=0)
     id_test = data_set.id_val
-
     prob_1, lgts_1 = np.squeeze(np.array(probs)), np.squeeze(np.array(lgts))
 
     result_csv = pd.DataFrame({'NUMBER': id_test, 'PROB': prob_1, 'LOGIT': lgts_1, 'LABEL': np.array(lbls)})
