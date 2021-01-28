@@ -29,7 +29,6 @@ network_config.add_argument('--replicate', type=lambda x: x.title() in str(True)
 network_config.add_argument('--rep_label', type=int, dest='rep_label', default=1)
 network_config.add_argument('--rep_count', type=int, dest='rep_count', default=1)
 network_config.add_argument('--aug_param', type=int, dest='aug_param', default=20)
-# network_config.add_argument('--use_focal', type=lambda x: x.title() in str(True), dest='use_focal', default=False)
 network_config.add_argument('--alpha', type=float, dest='alpha', default=0.3)
 network_config.add_argument('--gamma', type=float, dest='gamma', default=2)
 network_config.add_argument('--use_dropout', type=lambda x: x.title() in str(True), dest='use_dropout', default=False)
@@ -40,7 +39,6 @@ network_config.add_argument('--last_kp', type=int, dest='last_kp', default=1)
 network_config.add_argument('--block_rep', type=str, dest='block_rep', default='1,1,1,1')
 network_config.add_argument('--k_p', type=str, dest='k_p', default='1,1,1,1')
 network_config.add_argument('--dense_type', type=int, dest='dense_type', default=1)  # dense block type
-
 
 
 parser.print_help()
@@ -98,7 +96,6 @@ image_height = int(config.image_size * h_w_prop)
 
 print('h_radius: ', h_radius, '  ', 'w_radius: ', w_radius)
 
-
 data_set = DataSettingV1(data_dir=os.path.join(npy_path, config.npy_name),
                          batch_size=config.batch_size, only_val=bool(1 - config.train),
                          image_size=config.image_size, image_height=image_height,
@@ -106,7 +103,6 @@ data_set = DataSettingV1(data_dir=os.path.join(npy_path, config.npy_name),
                          rep_count=config.rep_count, aug_param=config.aug_param)
 
 infer_name = 'Inference' + config.model_name
-
 
 if config.train:
     growth_k, block_rep, dense_type = config.growth_k, config.block_rep, config.dense_type
@@ -190,8 +186,6 @@ def training():
             feed_dict = {}
             while train_step < num_iter_train:
                 img, lbl, name, age, tm, dm, vas, _ = sess.run(data_set.train.next_batch)
-
-                # feed_dict = {model.images: img, model.labels: lbl, model.is_training: True}
                 feed_dict = {model.images: img, model.labels: lbl,
                              model.ages: age, model.vas: vas, model.tm: tm, model.dm: dm, model.is_training: True}
 
@@ -232,8 +226,6 @@ def training():
                                                                  -(-data_set.val.data_length // config.batch_size)))
 
                 img, lbl, name, age, tm, dm, vas, _ = sess.run(data_set.val.next_batch)
-
-                # feed_dict = {model.images: img, model.labels: lbl, model.is_training: False}
                 feed_dict = {model.images: img, model.labels: lbl,
                              model.ages: age, model.vas: vas, model.tm: tm, model.dm: dm, model.is_training: False}
 
@@ -336,7 +328,6 @@ def validation():
 
             img, lbl, name, age, tm, dm, vas, _ = sess.run(data_set.val.next_batch)
 
-            # feed_dict = {model.images: img, model.labels: lbl, model.is_training: False}
             feed_dict = {model.images: img, model.labels: lbl,
                          model.ages: age, model.vas: vas, model.tm: tm, model.dm: dm, model.is_training: False}
 
