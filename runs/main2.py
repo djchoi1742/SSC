@@ -46,7 +46,6 @@ network_config.add_argument('--rep_count', type=int, dest='rep_count', default=1
 network_config.add_argument('--aug_param', type=int, dest='aug_param', default=20)
 network_config.add_argument('--cam', type=lambda x: x.title() in str(True), dest='cam', default=False)  # validation
 
-# parser.print_help()
 config, unparsed = parser.parse_known_args()
 
 import sys, os
@@ -66,7 +65,6 @@ import models.model2 as model_y
 from tf_utils.tboard import TensorBoard
 from tf_utils.result import *
 
-
 trial_serial_str = '%03d' % config.trial_serial
 
 if config.use_exp1:
@@ -84,7 +82,6 @@ else:
     model_scope = config.pre_model2
     classifier_scope = re.sub('Model', 'Classifier', config.pre_model2)
 
-#
 log_path = os.path.join(config.data_path, config.exp_name, config.model_name, 'logs-%s' % trial_serial_str)
 result_path = os.path.join(config.data_path, config.exp_name, config.model_name,  'result-%s' % trial_serial_str)
 ppt_path = os.path.join(config.data_path, config.exp_name, config.model_name, 'ppt-%s' % trial_serial_str)
@@ -108,9 +105,7 @@ if config.train:
 else:
     h_radius = get_info(excel_path, data_name+'_val', 'H_RADIUS')
     w_radius = get_info(excel_path, data_name+'_val', 'W_RADIUS')
-
-# pre_nn_serial_str = '%03d' % config.pre_nn_serial
-
+    
 h_w_prop = h_radius / w_radius
 image_height = int(config.image_size * h_w_prop)
 
@@ -149,11 +144,8 @@ nn_scope = re.sub('Model', 'NN', config.pre_nn_model)
 aggregate_scope = re.sub('Model', 'Aggregate', config.model_name)
 
 pre_train_nn_vars = [v for v in all_train_vars if nn_scope in v.name]
-# pre_train_mm_vars = [v for v in all_train_vars if aggregate_scope in v.name]
 
 pre_train_all_vars = pre_train_img_vars + pre_train_nn_vars # + pre_train_mm_vars
-# pre_train_nn_vars = tf.trainable_variables()[-4:]
-
 
 global_vars = tf.global_variables()
 new_vars = list(filter(lambda a: not a in pre_train_img_vars, global_vars))
@@ -225,7 +217,6 @@ def training():
         'REP_LABEL': config.rep_label,
         'REP_COUNT': config.rep_count,
         'AUG_PARAM': config.aug_param,
-        # 'USE_FOCAL': config.use_focal,
         'FOCAL_LOSS_ALPHA': config.alpha,
         'FOCAL_LOSS_GAMMA': config.gamma
     }
@@ -251,10 +242,6 @@ def training():
             feed_dict = {}
             while train_step < num_iter_train:
                 img, lbl, name, age, tm, dm, vas, _ = sess.run(data_set.train.next_batch)
-
-                # clv_w, clv_b = sess.run([model.clv_weight, model.clv_bias])
-                # mm_w, mm_b = sess.run([model.mm_weight, model.mm_bias])
-                # import pdb; pdb.set_trace()
 
                 feed_dict = {model.images: img, model.labels: lbl,
                              model.ages: age, model.vas: vas, model.tm: tm, model.dm: dm, model.is_training: True}
@@ -326,14 +313,12 @@ def training():
                     v_criteria = v_measure < max(auc_csv['LOSS'].tolist())
                 else:
                     v_criteria = None
-
             elif config.val_measure == 'auc':
                 v_measure = val_auc
                 if current_epoch >= config.max_keep + 1:
                     v_criteria = v_measure > min(auc_csv['AUC'].tolist())
                 else:
                     v_criteria = None
-
             else:
                 raise ValueError('Error! Invalid validation measure.')
 
@@ -365,20 +350,6 @@ def training():
                             os.path.join(log_path, 'model.ckpt-' + str(current_step))
                         auc_csv.loc[current_step, 'AUC'] = val_auc
                         auc_csv.loc[current_step, 'LOSS'] = val_loss_mean
-
-                # elif val_auc > min(auc_csv['AUC'].tolist()):
-
-                #     auc_csv = auc_csv.drop(max_current_step[0])
-                #     max_current_step.pop(0)
-                #     max_current_step.append(current_step)
-                #     max_perf_per_epoch.pop(0)
-                #     max_perf_per_epoch.append(val_auc)
-
-                #     saver.save(sess=sess, save_path=os.path.join(log_path, 'model.ckpt'), global_step=current_step)
-                #     auc_csv.loc[current_step, 'WEIGHT_PATH'] = \
-                #         os.path.join(log_path, 'model.ckpt-' + str(current_step))
-                #     auc_csv.loc[current_step, 'AUC'] = val_auc
-                #     auc_csv.loc[current_step, 'LOSS'] = val_loss_mean
 
                 auc_csv.to_csv(os.path.join(result_path, result_name))
 
@@ -439,11 +410,6 @@ def validation():
                              -(-data_set.val.data_length // config.batch_size)))
 
             img, lbl, name, age, tm, dm, vas, _ = sess.run(data_set.val.next_batch)
-
-            # clv_w, clv_b = sess.run([model.clv_weight, model.clv_bias])
-            # mm_w, mm_b = sess.run([model.mm_weight, model.mm_bias])
-            # print(mm_w, mm_b)
-            # import pdb; pdb.set_trace()
 
             feed_dict = {model.images: img, model.labels: lbl,
                          model.ages: age, model.vas: vas, model.tm: tm, model.dm: dm, model.is_training: False}
