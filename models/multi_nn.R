@@ -7,7 +7,6 @@ library(ggplot2)
 
 load("/home/chzze/01_Rscript/33_SSC/RData/33_00_ftlist.RData")
 
-
 ### 1. Dataset: training, validation, test, test2 set ####
 df_train = openxlsx::read.xlsx('/data/SNUBH/SSC/info/dataset/exp111_train.xlsx', detectDates=TRUE)
 df_val = openxlsx::read.xlsx('/data/SNUBH/SSC/info/dataset/exp111_val.xlsx', detectDates=TRUE)
@@ -39,7 +38,6 @@ lgs_clv_fit = glm(lgs_clv_formula, family='binomial', data=df_train)
 summary(lgs_clv_fit)
 
 
-
 sigmoid = function(x) {
   sig = 1/(1+exp(-x))
   return(sig)
@@ -59,11 +57,9 @@ roc(df_val$SSC_LABEL_BIN1, pred_clv_val)  # AUC: 0.5747
 roc(df_test$SSC_LABEL_BIN1, pred_clv_test)  # AUC: 0.6401
 roc(df_test2$SSC_LABEL_BIN1, pred_clv_test2)  # AUC: 0.6769
 
-
 pre_train_path = '/data/SNUBH/SSC/exp153/Model58'
 model_path = '/data/SNUBH/SSC/exp151/Model58/Model58'
 
- 
  
 merge_mm_df = function(model_path, pre_serial, num_weight, lgs_clv_fit, pre_df, data_npy) {
   # model_path = '/data/SNUBH/SSC/exp153/Model58'
@@ -87,7 +83,6 @@ pre_train_mm = function(pre_serial, lgs_clv_fit, df_train) {
   
   pre_train_path = '/data/SNUBH/SSC/exp153/Model58'
   model_path = '/data/SNUBH/SSC/exp151/Model58/Model58'
- 
   result_serial = paste0('result-', sprintf('%03d', pre_serial))
  
   mm_train = merge_mm_df(pre_train_path, pre_serial, 1, lgs_clv_fit, df_train, 'ntrain.npy')
