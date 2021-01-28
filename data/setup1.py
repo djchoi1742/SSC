@@ -40,10 +40,6 @@ EXP_PATH = '/data/SNUBH/SSC/'
 RAW_PATH = os.path.join(DATA_PATH, 'RAW')
 
 train_excel_path = os.path.join(EXP_PATH, 'info', 'dataset', config.train_excel)
-
-# if config.use_ssc:
-    # val_excel_path = os.path.join(EXP_PATH, 'info', 'dataset', config.val_excel)
-# else:
 val_excel_path = os.path.join(EXP_PATH, 'info', 'dataset', config.val_excel)
 
 h_w_prop = config.h_radius / config.w_radius
@@ -80,7 +76,6 @@ def data_setting(npy_name):
                   'LX1', 'LY1', 'LX2', 'LY2',
                   'SPACING5_X', 'SPACING5_Y', 'REVERSE', 'DIRECTION',
                   'PATIENT_AGE', 'TRAUMA', 'DOMINANT_SIDE', 'VAS_MED', 'DATA_TYPE']
-
     excel = excel[select_col]
 
     def calculate_crop_coord(center_x, center_y, spacing_x, spacing_y, w_radius, h_radius,
@@ -194,7 +189,6 @@ def data_setting(npy_name):
         train_info = pd.DataFrame({'FILES5': pd.Series(file5_train), 'LABELS5': pd.Series(label5_train),
                                    'CLINICAL': pd.Series(clv_train), 'ID': pd.Series(id_train)})
         train_size = len(train_info)
-
         train_info.to_csv(os.path.join(excel_path, npy_name + '_train.csv'))
 
         train_log = {
@@ -227,7 +221,7 @@ class DataSettingV1:
             if 'clv_train' in kwargs:
                 train_x5, train_y5 = kwargs['file5_train'], kwargs['label5_train']
                 train_id, train_clv = kwargs['id_train'], kwargs['clv_train']
-
+                
             if 'clv_val' in kwargs:
                 val_x5, val_y5 = kwargs['file5_val'], kwargs['label5_val']
                 val_id, val_clv = kwargs['id_val'], kwargs['clv_val']
@@ -348,9 +342,6 @@ class DataSettingV1:
                             image = np.fliplr(image)
                         if direction == 0:  # flipped image
                             image = np.fliplr(image)
-
-                    # if augmentation and np.random.randint(2) == 1:  # random flip
-                    #     image = np.fliplr(image)
 
                     image_shape = [image_height, image_size]
                     image = np.expand_dims(skimage.transform.resize(image, image_shape, preserve_range=True), axis=-1)
