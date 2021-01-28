@@ -15,7 +15,6 @@ setup_config.add_argument('--is_flip', type=lambda x: x.title() in str(True), de
 setup_config.add_argument('--aug_param', type=int, dest='aug_param', default=20)
 setup_config.add_argument('--label_type', type=str, dest='label_type', default='BIN1')
 
-# parser.print_help()
 config, unparsed = parser.parse_known_args()
 
 import tensorflow as tf
@@ -34,7 +33,7 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
-DATA_PATH = '/data/SNUBH/SSC/'  # 210.114.91.201
+DATA_PATH = '/data/SNUBH/SSC/'  
 EXP_PATH = '/data/SNUBH/SSC/'
 
 RAW_PATH = os.path.join(DATA_PATH, 'RAW')
@@ -91,13 +90,10 @@ def data_setting(npy_name):
         excel = excel.append(excel_train, ignore_index=True)
 
     select_col = ['NUMBER', 'FOLDER_NAME', 'SIDE', label_type, 'VIEW5',
-                  # 'L_COORD1_X', 'L_COORD1_Y', 'L_COORD2_X', 'L_COORD2_Y',
                   'LX1', 'LY1', 'LX2', 'LY2',
                   'SPACING5_X', 'SPACING5_Y', 'REVERSE', 'DIRECTION',
                   'PATIENT_AGE', 'TRAUMA', 'DOMINANT_SIDE', 'VAS_MED', 'DATA_TYPE'
-                  # 'BEAR_HUG', 'BELLY_PRESS', 'IR_LAG_SIGN', 'LIFT_OFF',
                   ]
-
     excel = excel[select_col]
 
     def calculate_crop_coord(center_x, center_y, spacing_x, spacing_y, w_radius, h_radius,
@@ -152,7 +148,6 @@ def data_setting(npy_name):
     val_info = pd.DataFrame({'FILES5': pd.Series(file5_val), 'LABELS5': pd.Series(label5_val),
                              'CLINICAL': pd.Series(clv_val), 'ID': pd.Series(id_val)})
     val_size = len(val_info)
-
     val_info.to_csv(os.path.join(excel_path, npy_name + '_val.csv'))
 
     val_log = {
@@ -256,8 +251,6 @@ class DataSettingV1:
         self.id_val = val_id
 
         if only_val is False:
-            # warning!! not used exp040 dataset
-            # data replication: positive * 2
             if replicate:
                 def replicate_data(rep_x, rep_y, rep_id, rep_clv, label, rep_num):
                     index = np.asarray([v[-1] for v in rep_y])
@@ -274,7 +267,6 @@ class DataSettingV1:
                         rep_clv = np.concatenate([rep_clv, rep_label_clv], axis=0)
 
                     rep_out_x, rep_out_y, rep_out_id, rep_out_clv = rep_x, rep_y, rep_id, rep_clv
-
                     return rep_out_x, rep_out_y, rep_out_id, rep_out_clv
 
                 train_x5, train_y5, train_id, train_clv = \
@@ -316,10 +308,6 @@ class DataSettingV1:
 
                     image = dcm_info.pixel_array
 
-                    # windowing
-                    # w_min, w_max = np.quantile(image, 0.2), np.quantile(image, 1.0)
-                    # image = image_windowing(image, w_min, w_max)
-
                     if augmentation:
                         shift_x = np.random.randint(dcm_info.Columns // aug_param)
                         shift_y = np.random.randint(dcm_info.Rows // aug_param)
@@ -355,7 +343,6 @@ class DataSettingV1:
                 clv_split = [np.float32(i) for i in clv_split]
 
                 age, tm, dm, vas = clv_split[:]
-
                 f5, l5, side = each_read(file5, label5, is_flip, augmentation)
 
                 idv = id.decode()
@@ -430,7 +417,6 @@ def test_data_loader(data_set):
 def show_images(images, names, sides, num_rows=6, num_cols=10, fig_size=(10*2, 6*2)):
     plt.figure(figsize=fig_size)
     num_figs = images.shape[0]  # num_rows * num_cols
-    # num_chars = 5  # num of chars to show in names
 
     for j in range(num_figs):
         plt.subplot(num_rows, num_cols, j + 1)
