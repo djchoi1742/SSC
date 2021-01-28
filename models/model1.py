@@ -62,7 +62,6 @@ def get_train_info(data_path, key):
         return info[key]
 
 
-
 def conv_layer(inputs, in_channels, out_channels, is_training):
     conv = layers.conv2d(inputs=inputs, num_outputs=in_channels, kernel_size=1, stride=1, activation_fn=None)
     conv = tf.nn.relu(layers.batch_norm(inputs=conv, center=True, scale=True, is_training=is_training))
@@ -141,7 +140,6 @@ def dense_block(input_x, layer_name, rep, growth_k, is_training, use_dropout=Fal
                                                 num_outputs=squeeze.shape[-1].value,
                                                 activation_fn=tf.nn.sigmoid)
             x = x * excitation
-
     return x
 
 
@@ -151,7 +149,6 @@ class InferenceModel58:
                  alpha=0.3, gamma=2, block_rep='1,1,1,1', k_p='1,1,1,1', use_se=False, **kwargs):
 
         self.model_scope, _ = design_scope(class_name=type(self).__name__)
-
         self.img_h, self.img_w, self.img_c = image_height, image_size, 1
         self.class_num = 1
         self.images = tf.placeholder(tf.float32, shape=[None, self.img_h, self.img_w, self.img_c])
@@ -220,7 +217,6 @@ def each_param(train_var):
 def training_option(loss, learning_rate=0.01, decay_steps=5000, decay_rate=0.94, decay=0.9, epsilon=0.1):
     global_step = tf.Variable(0, trainable=False, name='global_step')
     global_epoch = tf.Variable(0, trainable=False, name='global_epoch')
-
     with tf.variable_scope('reg_loss'):
         reg_loss = 0.001 * tf.add_n([tf.nn.l2_loss(v) for v in tf.trainable_variables() if 'bias' not in v.name])
     lr_rate = tf.train.exponential_decay(learning_rate=learning_rate, global_step=tf.train.get_global_step(),
@@ -239,6 +235,5 @@ if __name__ == '__main__':
 
     print(train_vars)
     print(len(train_vars))
-
     print(sum(total_params))
 
