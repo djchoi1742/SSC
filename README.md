@@ -22,6 +22,7 @@
 
 
 - python scripts
+   - enviroment: python 3.6, Tensorflow 1.12
    - data
       1. data/setup1.py       - Setting pre-training dataset
       2. data/setup2.py       - Setting main dataset
