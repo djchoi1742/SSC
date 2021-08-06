@@ -3,7 +3,8 @@
 - Objective
    - To develop a deep learning algorithm for prediction of subscapularis tendon tears on shoulder X-ray and clinical information
 
-![SSC_Fig 1](https://user-images.githubusercontent.com/49828672/128472304-1b46338d-985b-4ada-9d7f-28e0bfa3fb46.png)
+- Network Architecture
+   ![SSC_Fig 1](https://user-images.githubusercontent.com/49828672/128472304-1b46338d-985b-4ada-9d7f-28e0bfa3fb46.png)
 
 
 - python scripts
