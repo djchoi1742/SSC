@@ -8,7 +8,7 @@
       <img src="https://user-images.githubusercontent.com/49828672/128472304-1b46338d-985b-4ada-9d7f-28e0bfa3fb46.png" width=80% height=80% img align="center"> 
    </p>
 
-- Grad-CAM
+- Grad-CAM (positive & negative sample)
    <table>
       <tr>
          <p align="center">
