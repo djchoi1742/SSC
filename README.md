@@ -1,7 +1,7 @@
 # Multi-modal network to evaluate subscapularis tendon tears
 
 - Objective
-   - To develop a deep learning algorithm for prediction of subscapularis tendon tears on shoulder X-ray and clinical information
+   - To develop a multi-modal deep learning algorithm for prediction of subscapularis tendon tears on shoulder X-ray and clinical information
 
 - Network Architecture
    <p align="center">
