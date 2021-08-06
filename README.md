@@ -9,7 +9,7 @@
 - Grad-CAM
 
    ![SSC_CAM_pos](https://user-images.githubusercontent.com/49828672/128472829-80de179f-f8c3-4620-b0a7-fa3b18cca997.png){: width="100" height="100"}
-   ![SSC_CAM_neg](https://user-images.githubusercontent.com/49828672/128472837-fb6b8d8d-b7d0-47f3-9a6d-1f7ea184588d.png){: width="100" height="100"}
+   # ![SSC_CAM_neg](https://user-images.githubusercontent.com/49828672/128472837-fb6b8d8d-b7d0-47f3-9a6d-1f7ea184588d.png){: width="100" height="100"}
 
 - python scripts
    - data
