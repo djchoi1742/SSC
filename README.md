@@ -9,7 +9,7 @@
 
 - Grad-CAM
 
-   <img src="https://user-images.githubusercontent.com/49828672/128472829-80de179f-f8c3-4620-b0a7-fa3b18cca997.png" width=50% height=50%> 
+   <img src="https://user-images.githubusercontent.com/49828672/128472829-80de179f-f8c3-4620-b0a7-fa3b18cca997.png" width=50% height=50%> </td>
    <img src="https://user-images.githubusercontent.com/49828672/128472837-fb6b8d8d-b7d0-47f3-9a6d-1f7ea184588d.png" width=50% height=50%>
 
 
