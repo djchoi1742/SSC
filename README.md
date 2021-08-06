@@ -11,13 +11,11 @@
 - Grad-CAM
    <table>
       <tr>
-         <td>Positive sample</td>
-         <td>Negative sample
-      </tr>
-      <tr>
          <p align="center">
-         <img src="https://user-images.githubusercontent.com/49828672/128472829-80de179f-f8c3-4620-b0a7-fa3b18cca997.png" width=40% height=40%> </td>
-         <img src="https://user-images.githubusercontent.com/49828672/128472837-fb6b8d8d-b7d0-47f3-9a6d-1f7ea184588d.png" width=40% height=40%>
+         <img src="https://user-images.githubusercontent.com/49828672/128472829-80de179f-f8c3-4620-b0a7-fa3b18cca997.png" width=40% height=40%,
+              title="Positive sample"> </td>
+         <img src="https://user-images.githubusercontent.com/49828672/128472837-fb6b8d8d-b7d0-47f3-9a6d-1f7ea184588d.png" width=40% height=40%,
+              title="Negative sample">
          </p>
       </tr>
    </table>
