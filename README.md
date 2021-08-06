@@ -5,14 +5,14 @@
 
 - Network Architecture
    <p align="center">
-      <img src="https://user-images.githubusercontent.com/49828672/128472304-1b46338d-985b-4ada-9d7f-28e0bfa3fb46.png" width=70% height=70% img align="center"> 
+      <img src="https://user-images.githubusercontent.com/49828672/128472304-1b46338d-985b-4ada-9d7f-28e0bfa3fb46.png" width=80% height=80% img align="center"> 
    </p>
 
 - Grad-CAM
    <table>
       <tr>
-         <img src="https://user-images.githubusercontent.com/49828672/128472829-80de179f-f8c3-4620-b0a7-fa3b18cca997.png" width=50% height=50%> </td>
-         <img src="https://user-images.githubusercontent.com/49828672/128472837-fb6b8d8d-b7d0-47f3-9a6d-1f7ea184588d.png" width=50% height=50%>
+         <img src="https://user-images.githubusercontent.com/49828672/128472829-80de179f-f8c3-4620-b0a7-fa3b18cca997.png" width=40% height=40%> </td>
+         <img src="https://user-images.githubusercontent.com/49828672/128472837-fb6b8d8d-b7d0-47f3-9a6d-1f7ea184588d.png" width=40% height=40%>
       </tr>
    </table>
 
