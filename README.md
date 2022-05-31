@@ -37,4 +37,4 @@
    - tf_utils
       1. tf_utils/tboard.py   - Related to Tensorboard output
 
-###### Reference: Kang, Y., Choi, D., Lee, K., Oh, J., Kim, B.R., & Ahn, J. (2021). Evaluating subscapularis tendon tears on axillary lateral radiographs using deep learning. European Radiology, 1 - 10.
+###### Reference: Kang, Y., Choi, D., Lee, K., Oh, J., Kim, B.R., & Ahn, J. (2021). Evaluating subscapularis tendon tears on axillary lateral radiographs using deep learning. European Radiology 31(12):9408-9417.
